@@ -369,7 +369,16 @@ bool stlink2_open(programmer_t *pgm) {
 	DEBUG_PRINT("        -> %02x %02x %02x %02x %02x %02x %02x %02x\n",
 		buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]);
 
+	if (pgm->rst_as_por) {
+		swim_cmd(pgm, 2, STLINK_SWIM, SWIM_DEASSERT_RESET);
+	}
+
 	swim_cmd(pgm, 2, STLINK_SWIM, SWIM_ASSERT_RESET);
+
+	if (pgm->rst_as_por) {
+		usleep(10000);
+		swim_cmd(pgm, 2, STLINK_SWIM, SWIM_DEASSERT_RESET);
+	}
 
 	swim_cmd(pgm, 2, STLINK_SWIM, SWIM_ENTER_SEQ);
 

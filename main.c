@@ -128,6 +128,7 @@ void print_help_and_exit(const char *name, bool err) {
 	fprintf(stream, "\t-v <filename>  Verify data in device against file\n");
 	fprintf(stream, "\t-V             Print Date(YearMonthDay-Version) and Version format is IE: 20171204-1.0\n");
 	fprintf(stream, "\t-u             Unlock. Reset option bytes to factory default to remove write protection.\n");
+	fprintf(stream, "\t-R             Use RST line as a Power-on Reset trigger. NOTE: Do not power the device via RST line!\n");
 	exit(-err);
 }
 
@@ -304,13 +305,14 @@ int main(int argc, char **argv) {
 		pgm_specified = false,
 		pgm_serialno_specified = false,
 		part_specified = false,
+        rst_as_por = false,
         bytes_count_specified = false;
 	memtype_t memtype = FLASH;
 	const char * port = NULL;
 	int i;
 	programmer_t *pgm = NULL;
 	const stm8_device_t *part = NULL;
-	while((c = getopt (argc, argv, "r:w:v:nc:S:p:d:s:b:luV")) != (char)-1) {
+	while((c = getopt (argc, argv, "r:w:v:nc:S:p:d:s:b:luVR")) != (char)-1) {
 		switch(c) {
 			case 'c':
 				pgm_specified = true;
@@ -379,6 +381,9 @@ int main(int argc, char **argv) {
 			case 'V':
                                 print_version_and_exit( (bool)0);
 				break;
+			case 'R':
+				rst_as_por = true;
+				break;
 			case '?':
                                 print_help_and_exit(argv[0], false);
 			default:
@@ -394,6 +399,8 @@ int main(int argc, char **argv) {
 	}
 	if(!pgm)
 		spawn_error("No programmer has been specified");
+
+	pgm->rst_as_por = rst_as_por;
 	pgm->port = port;
 	if(part_specified && !part) {
 		fprintf(stderr, "No valid part specified. Use -l to see the list of supported devices.\n");

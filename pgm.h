@@ -58,6 +58,7 @@ typedef struct programmer_s {
 	/* Data for espstlink module. */
         espstlink_t * espstlink;
 	const char *port;
+	bool rst_as_por;
 } programmer_t;
 
 typedef bool (*pgm_open_cb)(programmer_t *);
