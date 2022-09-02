@@ -376,7 +376,7 @@ bool stlink2_open(programmer_t *pgm) {
 	swim_cmd(pgm, 2, STLINK_SWIM, SWIM_ASSERT_RESET);
 
 	if (pgm->rst_as_por) {
-		usleep(10000);
+		usleep(100000);
 		swim_cmd(pgm, 2, STLINK_SWIM, SWIM_DEASSERT_RESET);
 	}
 
